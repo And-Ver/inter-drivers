@@ -2,103 +2,163 @@
 <html lang="el">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Inter Οδηγοί</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-  :root {
-    --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;--border:#2e2e2e;
-    --accent:#e8c547;--accent2:#4caf7d;--danger:#e05555;--warning:#e8934a;
-    --text:#f0f0f0;--text2:#888;--text3:#555;--radius:8px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;padding:0 0 80px 0}
-  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
-  .header-title{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--accent);letter-spacing:.05em}
-  .header-right{display:flex;align-items:center;gap:8px}
-  .header-date{font-size:12px;color:var(--text2);font-family:'IBM Plex Mono',monospace}
-  .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);transition:background .3s;flex-shrink:0}
-  .sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite}
-  .sync-dot.ok{background:var(--accent2)}
-  .sync-dot.error{background:var(--danger)}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .page{display:none;padding:20px;animation:fadeIn .15s ease}
-  .page.active{display:block}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
-  .card-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px}
-  .driver-row{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{border-radius:4px;padding:6px 11px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--surface2);color:var(--text2)}
-  .chip.working{border-color:var(--accent2);color:var(--accent2)}
-  .chip.off{border-color:var(--danger);color:var(--danger);opacity:.6}
-  .chip.holiday{border-color:var(--warning);color:var(--warning);opacity:.6}
-  .count-row{display:flex;align-items:center;justify-content:center;gap:28px;padding:4px 0}
-  .count-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;user-select:none}
-  .count-btn:active{transform:scale(.9);background:var(--border)}
-  .count-num{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:600;color:var(--accent);min-width:64px;text-align:center;line-height:1}
-  .suggestion-card{background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--radius);padding:18px;margin-bottom:14px}
-  .suggestion-label{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:12px}
-  .suggestion-names{font-size:24px;font-weight:600;line-height:1.45;margin-bottom:16px}
-  .suggestion-names span{display:block}
-  .confirm-btn{width:100%;padding:17px;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.02em;transition:all .12s}
-  .confirm-btn:active{transform:scale(.98);opacity:.85}
-  .confirm-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-  .alert{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warning);border-radius:var(--radius);padding:13px 15px;font-size:14px;color:var(--text2);margin-bottom:14px;line-height:1.5}
-  .section-title{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:14px}
-  .stat-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
-  .stat-row:last-child{border-bottom:none}
-  .stat-name{font-size:15px;font-weight:500;min-width:115px}
-  .stat-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
-  .stat-bar{height:100%;background:var(--accent2);border-radius:3px;transition:width .6s ease}
-  .stat-count{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text2);min-width:28px;text-align:right}
-  .history-item{display:flex;align-items:flex-start;gap:14px;padding:11px 0;border-bottom:1px solid var(--border)}
-  .history-item:last-child{border-bottom:none}
-  .history-date{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);min-width:48px;padding-top:2px;flex-shrink:0}
-  .history-names{font-size:14px;color:var(--text);line-height:1.55}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100}
-  .tab{flex:1;padding:10px 0 12px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;transition:color .12s;border:none;background:none;text-transform:uppercase}
-  .tab.active{color:var(--accent)}
-  .tab-icon{font-size:22px;display:block;margin-bottom:3px}
-  .empty{color:var(--text3);font-size:14px;padding:24px 0;text-align:center}
-  .loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;gap:10px}
-  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+:root{
+  --green-dark:#1a3a1a;--green-mid:#3B6D11;--green-light:#7dc54a;--green-bg:#EAF3DE;
+  --border:#d0e4b8;--bg:#f4f9ee;--card:#fff;--text:#1a2e1a;--text2:#5a7a5a;--text3:#8aaa8a;
+  --orange:#EF9F27;--orange-bg:#FEF3E2;--red:#c04040;--red-bg:#FCEBEB;
+  --radius:12px;--shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:20px}
+.header{background:var(--green-dark);color:#a8d878;padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.header-title{font-size:17px;font-weight:700;letter-spacing:.01em}
+.header-right{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.8}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#8aaa8a;transition:background .3s}
+.sync-dot.ok{background:#7dc54a}.sync-dot.syncing{background:#EF9F27;animation:pulse 1s infinite}.sync-dot.error{background:#e05555}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.nav-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:49px;z-index:40}
+.tab{flex:1;padding:11px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--green-mid);border-bottom-color:var(--green-mid)}
+.tab i{display:block;font-size:18px;margin-bottom:2px}
+
+.page{display:none;padding:14px 14px 0}
+.page.active{display:block}
+
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.label i{font-size:14px}
+
+/* Day buttons */
+.day-btns{display:flex;gap:8px;margin-bottom:12px}
+.day-btn{flex:1;padding:9px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
+.day-btn.active{background:var(--green-dark);border-color:var(--green-dark);color:#a8d878}
+.day-btn-main{font-size:13px;font-weight:600}
+.day-btn-sub{font-size:11px;opacity:.7;margin-top:2px}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border)}
+.chip-work{background:var(--green-bg);border-color:#97C459;color:var(--green-mid)}
+.chip-off{background:#f5f5f5;border-color:#ddd;color:#999;text-decoration:line-through}
+.chip-adeia{background:#FEF3E2;border-color:#EF9F27;color:#854F0B}
+.chip-holiday{background:#FEF3E2;border-color:#EF9F27;color:#854F0B}
+.chip-sun{background:#F1EFE8;border-color:#B4B2A9;color:#5F5E5A}
+
+/* Alert */
+.msg{font-size:13px;padding:9px 12px;border-radius:8px;margin-bottom:10px;border:.5px solid}
+.msg-hol{background:var(--orange-bg);border-color:var(--orange);color:#854F0B}
+.msg-sun{background:#F1EFE8;border-color:#B4B2A9;color:#5F5E5A}
+
+/* Count selector */
+.count-row{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.cnt-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300;transition:all .12s;user-select:none}
+.cnt-btn:active{background:var(--border)}
+.cnt-num{font-size:36px;font-weight:700;color:var(--green-mid);min-width:40px;text-align:center;line-height:1}
+.cnt-label{font-size:13px;color:var(--text2)}
+
+/* Send area */
+.send-card{background:var(--green-bg);border-color:#97C459}
+.suggested-names{margin-bottom:12px}
+.sent-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #c8e0a8}
+.sent-row:last-child{border-bottom:none}
+.sent-name{font-size:16px;font-weight:600;color:var(--green-dark)}
+.sent-meta{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.sent-actions{display:flex;gap:8px}
+.ic-btn{background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.6;transition:opacity .15s}
+.ic-btn:hover{opacity:1}
+.ic-btn.del{color:var(--red)}
+.ic-btn.edit{color:var(--green-mid)}
+select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);margin-right:6px}
+.ok-btn{font-size:12px;padding:5px 10px;border:none;border-radius:6px;background:var(--green-dark);color:#a8d878;cursor:pointer;font-weight:700}
+
+.send-btn{width:100%;padding:14px;background:var(--green-dark);color:#a8d878;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .12s}
+.send-btn:active{opacity:.85;transform:scale(.98)}
+.send-btn.has-entry{background:var(--green-bg);color:var(--green-mid);border:1px solid #97C459}
+
+/* Stats */
+.stat-row{padding:8px 0;border-bottom:.5px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.stat-name{font-size:14px;font-weight:500}
+.stat-cnt{font-size:14px;color:var(--text2)}
+.stat-last{font-size:12px;color:var(--text3);margin-bottom:3px}
+.score-bar{height:5px;border-radius:3px;background:var(--border)}
+.score-fill{height:100%;border-radius:3px;background:var(--green-mid)}
+.next-badge{font-size:11px;background:var(--green-bg);color:var(--green-mid);border:.5px solid #97C459;border-radius:10px;padding:2px 7px;margin-left:6px}
+
+/* History */
+.hist-row{font-size:13px;padding:8px 0;border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.hist-row:last-child{border-bottom:none}
+.hist-date{color:var(--text2);min-width:50px}
+.hist-names{color:var(--text);font-weight:500;text-align:right}
+
+.empty{color:var(--text3);font-size:14px;padding:20px;text-align:center}
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:30px;color:var(--text2);font-size:13px}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green-mid);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="header-title">INTER // ΟΔΗΓΟΙ</div>
+  <div class="header-title"><i class="ti ti-truck"></i> Inter Οδηγοί</div>
   <div class="header-right">
-    <div class="header-date" id="header-date"></div>
+    <span id="hdr-date"></span>
     <div class="sync-dot" id="sync-dot"></div>
   </div>
 </div>
-<div class="page active" id="page-main"><div id="main-content"><div class="loading"><div class="spinner"></div> Φόρτωση...</div></div></div>
-<div class="page" id="page-stats"><div class="section-title">Στατιστικά Inter</div><div id="stats-content"><div class="empty">Φόρτωση...</div></div></div>
-<div class="page" id="page-history"><div class="section-title">Ιστορικό αποστολών</div><div id="history-content"><div class="empty">Φόρτωση...</div></div></div>
-<nav class="bottom-nav">
-  <button class="tab active" onclick="showPage('main')"><span class="tab-icon">🚛</span>Σήμερα</button>
-  <button class="tab" onclick="showPage('stats')"><span class="tab-icon">📊</span>Στατιστικά</button>
-  <button class="tab" onclick="showPage('history')"><span class="tab-icon">📋</span>Ιστορικό</button>
-</nav>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showPage('main')"><i class="ti ti-send"></i>Αποστολή</div>
+  <div class="tab" onclick="showPage('stats')"><i class="ti ti-chart-bar"></i>Στατιστικά</div>
+  <div class="tab" onclick="showPage('history')"><i class="ti ti-clock"></i>Ιστορικό</div>
+</div>
+
+<div id="page-main" class="page active">
+  <div class="card">
+    <div class="label"><i class="ti ti-calendar"></i> Επιλογή ημέρας</div>
+    <div class="day-btns" id="day-btns"></div>
+    <div class="chips" id="driver-chips"></div>
+  </div>
+  <div id="action-card"></div>
+</div>
+
+<div id="page-stats" class="page">
+  <div class="card">
+    <div class="label"><i class="ti ti-building-factory"></i> Κατάταξη Inter</div>
+    <div id="stats-list"><div class="loading"><div class="spinner"></div>Φόρτωση...</div></div>
+  </div>
+</div>
+
+<div id="page-history" class="page">
+  <div class="card">
+    <div class="label"><i class="ti ti-history"></i> Ιστορικό αποστολών</div>
+    <div id="history-list"><div class="loading"><div class="spinner"></div>Φόρτωση...</div></div>
+  </div>
+</div>
+
 <script>
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbzzS3DOn5eNZ4TRP008oU2W4RAFLGu4WxyhhxhSGr7OW06frbbAX_ux64v6x8lXt4hpXw/exec';
+// ============================================================
+// CONFIG
+// ============================================================
+const BACKEND='https://script.google.com/macros/s/AKfycbzzS3DOn5eNZ4TRP008oU2W4RAFLGu4WxyhhxhSGr7OW06frbbAX_ux64v6x8lXt4hpXw/exec';
 const DRIVERS=['Καραγιώργος','Σαντικίδης','Σερσέμης','Στύλος','Ζαχαρίας'];
+const WD=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
 
-// Πρόγραμμα Μαΐου 2026 — ημέρες που ΔΕΝ εργάζεται ο οδηγός (εκτός Κυριακών/αργιών)
-const SCHEDULE={
-  2026:{
-    5:{
-      'Καραγιώργος':{off:[3,9,10,17,18,23,24,29,31]},
-      'Σαντικίδης': {off:[3,9,10,16,17,22,23,28,31]},
-      'Σερσέμης':   {off:[2,3,10,15,16,21,22,27,31]},
-      'Στύλος':     {off:[3,10,11,17,18,20,24,26,31]},
-      'Ζαχαρίας':  {off:[3,10,14,17,19,24,25,30,31]},
-    }
-  }
+// Μάιος 2026 — ημέρες που ΔΕΝ εργάζεται (εκτός Κυριακών/αργιών)
+const MAY_SCHED={
+  'Καραγιώργος':{repos:[9,18,23,29],   adeia:[4,5,6,7,8]},
+  'Σαντικίδης': {repos:[16,22,28],      adeia:[]},
+  'Σερσέμης':   {repos:[2,15,21,27],    adeia:[]},
+  'Στύλος':     {repos:[11,20,26],      adeia:[12,13]},
+  'Ζαχαρίας':  {repos:[14,19,25,30],   adeia:[]}
 };
-
-const HOLIDAYS={'2026-05-01':'Πρωτομαγιά'};
+const MAY_HOL=[1];
+const MAY_SUN=[3,10,17,24,31];
 
 const HISTORICAL=[
   {date:'2026-04-22',drivers:['Σερσέμης','Ζαχαρίας']},
@@ -116,52 +176,94 @@ const HISTORICAL=[
   {date:'2026-05-11',drivers:['Καραγιώργος','Ζαχαρίας']},
 ];
 
-let state={history:[],interCounts:{},currentCount:1,loaded:false};
+// ============================================================
+// STATE
+// ============================================================
+let S={history:[],counts:{},lastDate:{},selOffset:1,currentCount:1,editIdx:-1,editVal:''};
+let dayOpts=[];
 
-function toDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function getToday(){const d=new Date();return{d,str:toDateStr(d),day:d.getDate(),month:d.getMonth()+1,year:d.getFullYear(),dow:d.getDay()}}
-function isHoliday(s){return!!HOLIDAYS[s]}
-function isSunday(dow){return dow===0}
+// ============================================================
+// HELPERS
+// ============================================================
+function dateStr(off){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().slice(0,10)}
+function parseDate(s){return new Date(s+'T12:00:00')}
+function fmtDate(s){const d=parseDate(s);return `${d.getDate()}/${d.getMonth()+1}`}
+function daysSince(ds){if(!ds)return null;const diff=Math.floor((new Date()-parseDate(ds))/(1000*60*60*24));return diff}
 
-function getWorkingDrivers(day,month,year){
-  const sched=((SCHEDULE[year]||{})[month])||{};
-  return DRIVERS.filter(d=>!((sched[d]||{off:[]}).off.includes(day)));
-}
-
-function getSuggested(count,working){
-  if(!working.length)return[];
-  const sorted=[...working].sort((a,b)=>{
-    const ca=state.interCounts[a]||0,cb=state.interCounts[b]||0;
-    if(ca!==cb)return ca-cb;
-    const ia=state.history.findIndex(h=>h.drivers.includes(a));
-    const ib=state.history.findIndex(h=>h.drivers.includes(b));
-    return(ib===-1?9999:ib)-(ia===-1?9999:ia);
+function getStatus(ds){
+  const d=parseDate(ds);
+  const day=d.getDate(),month=d.getMonth(); // 0-based
+  if(month!==4) return {working:[...DRIVERS],repos:[],adeia:[],holiday:[],sunday:[]};
+  const isSun=MAY_SUN.includes(day),isHol=MAY_HOL.includes(day);
+  const working=[],repos=[],adeia=[],holiday=[],sunday=[];
+  DRIVERS.forEach(dr=>{
+    if(isSun){sunday.push(dr);return}
+    if(isHol){holiday.push(dr);return}
+    const sc=MAY_SCHED[dr];
+    if(sc.adeia.includes(day))adeia.push(dr);
+    else if(sc.repos.includes(day))repos.push(dr);
+    else working.push(dr);
   });
-  return sorted.slice(0,Math.min(count,working.length));
+  return{working,repos,adeia,holiday,sunday};
 }
 
+function getDayOpts(){
+  const opts=[];let off=0;
+  while(opts.length<3){
+    const ds=dateStr(off);
+    opts.push({offset:off,dateStr:ds,weekday:parseDate(ds).getDay(),status:getStatus(ds)});
+    off++;
+  }
+  return opts;
+}
+
+function getSorted(available, excludeDs){
+  // excludeDs: array of dateStrings to skip when calculating "same day" penalty
+  return [...available].sort((a,b)=>{
+    const ca=S.counts[a]||0,cb=S.counts[b]||0;
+    if(ca!==cb)return ca-cb;
+    const la=S.lastDate[a]||'1900-01-01',lb=S.lastDate[b]||'1900-01-01';
+    return la.localeCompare(lb);
+  });
+}
+
+function getEntry(ds){return S.history.find(h=>h.date===ds)||null}
+
+function rebuildCounts(){
+  S.counts={};S.lastDate={};
+  [...S.history].reverse().forEach(h=>{
+    h.drivers.forEach(d=>{
+      S.counts[d]=(S.counts[d]||0)+1;
+      if(!S.lastDate[d]||h.date>S.lastDate[d])S.lastDate[d]=h.date;
+    });
+  });
+}
+
+// ============================================================
+// BACKEND
+// ============================================================
 function setSyncDot(s){document.getElementById('sync-dot').className='sync-dot '+s}
 
 async function loadData(){
   setSyncDot('syncing');
   try{
-    const res=await fetch(BACKEND_URL+'?action=read');
+    const res=await fetch(BACKEND+'?action=read');
     const data=await res.json();
     if(data&&data.history&&data.history.length>0){
-      state.history=data.history;
-      state.interCounts=data.interCounts||{};
+      S.history=data.history;
+      S.counts=data.counts||{};
+      S.lastDate=data.lastDate||{};
+      rebuildCounts();
     }else{
-      state.history=[...HISTORICAL];
-      state.interCounts={};
-      HISTORICAL.forEach(h=>h.drivers.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1}));
+      S.history=[...HISTORICAL];
+      rebuildCounts();
       await saveData();
     }
-    state.loaded=true;setSyncDot('ok');
+    setSyncDot('ok');
   }catch(e){
-    state.history=[...HISTORICAL];
-    state.interCounts={};
-    HISTORICAL.forEach(h=>h.drivers.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1}));
-    state.loaded=true;setSyncDot('error');
+    S.history=[...HISTORICAL];
+    rebuildCounts();
+    setSyncDot('error');
   }
   render();
 }
@@ -169,97 +271,252 @@ async function loadData(){
 async function saveData(){
   setSyncDot('syncing');
   try{
-    await fetch(BACKEND_URL,{method:'POST',body:JSON.stringify({action:'write',payload:{history:state.history,interCounts:state.interCounts}})});
+    await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'write',payload:{history:S.history,counts:S.counts,lastDate:S.lastDate}})});
     setSyncDot('ok');
   }catch(e){setSyncDot('error')}
 }
 
-function render(){renderMain();renderStats();renderHistory()}
+// ============================================================
+// RENDER
+// ============================================================
+function render(){
+  dayOpts=getDayOpts();
+  renderDayBtns();
+  renderDriverChips();
+  renderActionCard();
+  if(document.getElementById('page-stats').classList.contains('active'))renderStats();
+  if(document.getElementById('page-history').classList.contains('active'))renderHistory();
+}
 
-function renderMain(){
-  const{str,day,month,year,dow}=getToday();
-  const holiday=isHoliday(str),sunday=isSunday(dow),noWork=holiday||sunday;
-  const working=noWork?[]:getWorkingDrivers(day,month,year);
-  const suggested=getSuggested(state.currentCount,working);
+function renderDayBtns(){
+  const el=document.getElementById('day-btns');
+  const labels=['Σήμερα','Αύριο','Μεθαύριο'];
+  el.innerHTML=dayOpts.map((opt,i)=>{
+    const d=parseDate(opt.dateStr);
+    const active=S.selOffset===opt.offset;
+    return `<div class="day-btn${active?' active':''}" onclick="selDay(${opt.offset})">
+      <div class="day-btn-main">${labels[i]}</div>
+      <div class="day-btn-sub">${WD[opt.weekday]} ${d.getDate()}/${d.getMonth()+1}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDriverChips(){
+  const opt=dayOpts.find(o=>o.offset===S.selOffset);
+  if(!opt){document.getElementById('driver-chips').innerHTML='';return}
+  const st=opt.status;
   let html='';
-  if(holiday)html+=`<div class="alert">🗓️ Σήμερα είναι αργία (${HOLIDAYS[str]}) — δεν εργάζεται κανείς.</div>`;
-  else if(sunday)html+=`<div class="alert">🗓️ Κυριακή — δεν εργάζεται κανείς.</div>`;
-  html+=`<div class="card"><div class="card-label">Κατάσταση οδηγών σήμερα</div><div class="driver-row">`;
   DRIVERS.forEach(d=>{
-    if(noWork)html+=`<div class="chip holiday">${d}</div>`;
-    else if(working.includes(d))html+=`<div class="chip working">${d}</div>`;
-    else html+=`<div class="chip off">${d}</div>`;
+    const cnt=S.counts[d]||0;
+    if(st.sunday.length)html+=`<span class="chip chip-sun">${d} ${cnt}</span>`;
+    else if(st.holiday.length)html+=`<span class="chip chip-holiday">${d} ${cnt}</span>`;
+    else if(st.adeia.includes(d))html+=`<span class="chip chip-adeia">${d} ${cnt}</span>`;
+    else if(st.repos.includes(d))html+=`<span class="chip chip-off">${d} ${cnt}</span>`;
+    else html+=`<span class="chip chip-work">${d} ${cnt}</span>`;
   });
-  html+=`</div></div>`;
-  html+=`<div class="card"><div class="card-label">Πόσοι χρειάζονται στην Inter;</div><div class="count-row"><button class="count-btn" onclick="changeCount(-1)">−</button><div class="count-num" id="count-num">${state.currentCount}</div><button class="count-btn" onclick="changeCount(1)">+</button></div></div>`;
-  if(!noWork&&working.length>0){
-    html+=`<div class="suggestion-card"><div class="suggestion-label">▶ Πηγαίνουν στην Inter</div><div class="suggestion-names">`;
-    suggested.forEach(n=>{html+=`<span>${n}</span>`});
-    html+=`</div><button class="confirm-btn" onclick="confirmSend()">✓ Επιβεβαίωση αποστολής</button></div>`;
+  document.getElementById('driver-chips').innerHTML=html;
+}
+
+function renderActionCard(){
+  const opt=dayOpts.find(o=>o.offset===S.selOffset);
+  const el=document.getElementById('action-card');
+  if(!opt){el.innerHTML='';return}
+  const st=opt.status;
+  const ds=opt.dateStr;
+  const d=parseDate(ds);
+  const dateLabel=`${WD[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}`;
+
+  if(st.sunday.length||st.holiday.length){
+    const type=st.sunday.length?'sun':'hol';
+    const msg=st.sunday.length?'Κυριακή — δεν εργάζεται κανείς.':'Αργία — δεν εργάζεται κανείς.';
+    el.innerHTML=`<div class="msg msg-${type}">${msg}</div>`;
+    return;
   }
-  document.getElementById('main-content').innerHTML=html;
+
+  const entry=getEntry(ds);
+  const working=st.working;
+
+  let html=`<div class="card ${entry?'send-card':''}">
+    <div class="label"><i class="ti ti-building-factory"></i> Inter — ${dateLabel}</div>`;
+
+  if(entry){
+    // Υπάρχει ήδη καταχωρημένη εγγραφή
+    html+=`<div class="suggested-names">`;
+    entry.drivers.forEach((d,i)=>{
+      const cnt=S.counts[d]||0;
+      const last=S.lastDate[d];
+      const dayAgo=last?daysSince(last):null;
+      const metaTxt=dayAgo!==null?`${cnt}x · τελ. ${dayAgo}μ πριν`:`${cnt}x`;
+      if(S.editIdx===i){
+        const available=working.filter(w=>w===d||!entry.drivers.includes(w));
+        html+=`<div class="sent-row">
+          <select class="inline-sel" id="edit-sel" onchange="S.editVal=this.value">
+            ${available.map(w=>`<option value="${w}"${w===d?' selected':''}>${w} (${S.counts[w]||0}x)</option>`).join('')}
+          </select>
+          <button class="ok-btn" onclick="confirmEdit(${i})">OK</button>
+        </div>`;
+      }else{
+        html+=`<div class="sent-row">
+          <span class="sent-name">${d}</span>
+          <span class="sent-meta">${metaTxt}</span>
+          <span class="sent-actions">
+            <button class="ic-btn edit" onclick="startEdit(${i},'${d}')" title="Αλλαγή"><i class="ti ti-pencil"></i></button>
+            <button class="ic-btn del" onclick="removeDriver(${i})" title="Αφαίρεση"><i class="ti ti-x"></i></button>
+          </span>
+        </div>`;
+      }
+    });
+    html+=`</div>`;
+    // Προσθήκη +1
+    if(entry.drivers.length<working.length){
+      html+=`<button class="send-btn has-entry" onclick="addOneMore('${ds}')"><i class="ti ti-plus"></i> Προσθήκη οδηγού</button>`;
+    }
+  }else{
+    // Νέα εγγραφή
+    html+=`<div class="count-row">
+      <button class="cnt-btn" onclick="changeCount(-1)">−</button>
+      <div class="cnt-num" id="cnt-num">${S.currentCount}</div>
+      <span class="cnt-label">οδηγοί</span>
+      <button class="cnt-btn" onclick="changeCount(1)">+</button>
+    </div>`;
+    const suggested=getSorted(working).slice(0,Math.min(S.currentCount,working.length));
+    html+=`<div class="suggested-names">`;
+    suggested.forEach(d=>{
+      const cnt=S.counts[d]||0;
+      html+=`<div class="sent-row"><span class="sent-name">${d}</span><span class="sent-meta">${cnt}x</span></div>`;
+    });
+    html+=`</div>`;
+    html+=`<button class="send-btn" onclick="doSend('${ds}')"><i class="ti ti-send"></i> Αποστολή για ${d.getDate()}/${d.getMonth()+1}</button>`;
+  }
+
+  html+=`</div>`;
+  el.innerHTML=html;
 }
 
 function renderStats(){
-  const maxC=Math.max(...DRIVERS.map(d=>state.interCounts[d]||0),1);
-  const sorted=[...DRIVERS].sort((a,b)=>(state.interCounts[b]||0)-(state.interCounts[a]||0));
-  let html='';
-  sorted.forEach(d=>{
-    const cnt=state.interCounts[d]||0,pct=Math.round((cnt/maxC)*100);
-    html+=`<div class="stat-row"><div class="stat-name">${d}</div><div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div><div class="stat-count">${cnt}</div></div>`;
-  });
-  document.getElementById('stats-content').innerHTML=html||'<div class="empty">Δεν υπάρχουν δεδομένα</div>';
+  const maxC=Math.max(...DRIVERS.map(d=>S.counts[d]||0),1);
+  const sorted=getSorted(DRIVERS);
+  const html=sorted.map((d,i)=>{
+    const cnt=S.counts[d]||0;
+    const last=S.lastDate[d];
+    const lastTxt=last?`τελ. ${daysSince(last)} μέρες πριν`:'δεν έχει πάει';
+    const pct=Math.round((cnt/maxC)*100);
+    return `<div class="stat-row">
+      <div class="stat-top">
+        <span class="stat-name">${i===0?`<span class="next-badge">επόμενος</span> `:''}${d}</span>
+        <span class="stat-cnt">${cnt}x</span>
+      </div>
+      <div class="stat-last">${lastTxt}</div>
+      <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('stats-list').innerHTML=html||'<div class="empty">Δεν υπάρχουν δεδομένα</div>';
 }
 
 function renderHistory(){
-  const recent=state.history.slice(0,40);
-  if(!recent.length){document.getElementById('history-content').innerHTML='<div class="empty">Δεν υπάρχει ιστορικό</div>';return}
-  let html='';
-  recent.forEach(h=>{
-    const p=h.date.split('-');
-    html+=`<div class="history-item"><div class="history-date">${p[2]}/${p[1]}</div><div class="history-names">${h.drivers.join(', ')}</div></div>`;
-  });
-  document.getElementById('history-content').innerHTML=html;
+  const recent=S.history.slice(0,30);
+  if(!recent.length){document.getElementById('history-list').innerHTML='<div class="empty">Δεν υπάρχει ιστορικό</div>';return}
+  document.getElementById('history-list').innerHTML=recent.map(h=>`
+    <div class="hist-row">
+      <span class="hist-date">${fmtDate(h.date)}</span>
+      <span class="hist-names">${h.drivers.join(', ')}</span>
+    </div>`).join('');
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function selDay(offset){
+  S.selOffset=offset;S.editIdx=-1;
+  renderDayBtns();renderDriverChips();renderActionCard();
 }
 
 function changeCount(delta){
-  const{day,month,year,dow,str}=getToday();
-  const working=(isHoliday(str)||isSunday(dow))?[]:getWorkingDrivers(day,month,year);
-  const max=working.length||4;
-  state.currentCount=Math.max(1,Math.min(state.currentCount+delta,max));
-  const el=document.getElementById('count-num');
-  if(el)el.textContent=state.currentCount;
-  renderMain();
+  const opt=dayOpts.find(o=>o.offset===S.selOffset);
+  const max=opt?opt.status.working.length:4;
+  S.currentCount=Math.max(1,Math.min(S.currentCount+delta,max));
+  renderActionCard();
 }
 
-function confirmSend(){
-  const{str,day,month,year}=getToday();
-  const working=getWorkingDrivers(day,month,year);
-  const suggested=getSuggested(state.currentCount,working);
-  if(!suggested.length)return;
-  const idx=state.history.findIndex(h=>h.date===str);
-  if(idx!==-1){
-    state.history[idx].drivers.forEach(d=>{state.interCounts[d]=Math.max(0,(state.interCounts[d]||0)-1)});
-    state.history.splice(idx,1);
-  }
-  state.history.unshift({date:str,drivers:suggested});
-  suggested.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1});
-  state.history=state.history.slice(0,60);
+function doSend(ds){
+  const opt=dayOpts.find(o=>o.dateStr===ds);
+  if(!opt)return;
+  const working=opt.status.working;
+  const suggested=getSorted(working).slice(0,Math.min(S.currentCount,working.length));
+  S.history=S.history.filter(h=>h.date!==ds);
+  S.history.unshift({date:ds,drivers:suggested});
+  S.history=S.history.slice(0,60);
+  rebuildCounts();
   saveData();
-  const btn=document.querySelector('.confirm-btn');
-  if(btn){btn.textContent='✓ Αποθηκεύτηκε!';btn.disabled=true;setTimeout(()=>render(),1500)}
+  render();
 }
 
+function addOneMore(ds){
+  const entry=getEntry(ds);
+  const opt=dayOpts.find(o=>o.dateStr===ds);
+  if(!entry||!opt)return;
+  const working=opt.status.working;
+  const available=working.filter(w=>!entry.drivers.includes(w));
+  if(!available.length)return;
+  const next=getSorted(available)[0];
+  entry.drivers.push(next);
+  rebuildCounts();
+  saveData();
+  render();
+}
+
+function startEdit(i,name){
+  S.editIdx=i;S.editVal=name;
+  renderActionCard();
+}
+
+function confirmEdit(i){
+  const opt=dayOpts.find(o=>o.offset===S.selOffset);
+  if(!opt)return;
+  const entry=getEntry(opt.dateStr);
+  if(!entry)return;
+  const sel=document.getElementById('edit-sel');
+  const newName=sel?sel.value:S.editVal;
+  entry.drivers[i]=newName;
+  S.editIdx=-1;
+  rebuildCounts();
+  saveData();
+  render();
+}
+
+function removeDriver(i){
+  const opt=dayOpts.find(o=>o.offset===S.selOffset);
+  if(!opt)return;
+  const entry=getEntry(opt.dateStr);
+  if(!entry)return;
+  if(entry.drivers.length<=1){
+    S.history=S.history.filter(h=>h.date!==opt.dateStr);
+  }else{
+    entry.drivers.splice(i,1);
+  }
+  S.editIdx=-1;
+  rebuildCounts();
+  saveData();
+  render();
+}
+
+// ============================================================
+// NAV
+// ============================================================
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.tab')[['main','stats','history'].indexOf(name)].classList.add('active');
+  if(name==='stats')renderStats();
+  if(name==='history')renderHistory();
 }
 
-const days=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
-const t=getToday();
-document.getElementById('header-date').textContent=days[t.dow]+' '+t.day+'/'+t.month;
+// ============================================================
+// INIT
+// ============================================================
+const now=new Date();
+document.getElementById('hdr-date').textContent=WD[now.getDay()]+' '+now.getDate()+'/'+(now.getMonth()+1);
 loadData();
 </script>
 </body>
