@@ -6,595 +6,260 @@
 <title>Inter Οδηγοί</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
   :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --surface2: #242424;
-    --border: #2e2e2e;
-    --accent: #e8c547;
-    --accent2: #4caf7d;
-    --danger: #e05555;
-    --text: #f0f0f0;
-    --text2: #888;
-    --text3: #555;
-    --radius: 8px;
+    --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;--border:#2e2e2e;
+    --accent:#e8c547;--accent2:#4caf7d;--danger:#e05555;--warning:#e8934a;
+    --text:#f0f0f0;--text2:#888;--text3:#555;--radius:8px;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 80px 0;
-  }
-
-  /* Header */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-  }
-  .header-date {
-    font-size: 12px;
-    color: var(--text2);
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .sync-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--text3);
-    transition: background 0.3s;
-  }
-  .sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
-  .sync-dot.ok { background: var(--accent2); }
-  .sync-dot.error { background: var(--danger); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  /* Pages */
-  .page { display: none; padding: 20px; }
-  .page.active { display: block; }
-
-  /* Today card */
-  .today-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  .today-label {
-    font-size: 11px;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 8px;
-  }
-  .today-drivers {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .driver-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .driver-chip.off {
-    border-color: var(--danger);
-    color: var(--danger);
-    opacity: 0.6;
-  }
-  .driver-chip.working { border-color: var(--accent2); color: var(--accent2); }
-
-  /* Count selector */
-  .count-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .count-label {
-    font-size: 11px;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 16px;
-  }
-  .count-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-  }
-  .count-btn {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text);
-    font-size: 24px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .count-btn:active { transform: scale(0.92); background: var(--border); }
-  .count-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 48px;
-    font-weight: 600;
-    color: var(--accent);
-    min-width: 60px;
-    text-align: center;
-    line-height: 1;
-  }
-
-  /* Suggestion */
-  .suggestion-card {
-    background: var(--surface);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .suggestion-label {
-    font-size: 11px;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 12px;
-  }
-  .suggestion-names {
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 16px;
-  }
-  .suggestion-names .name { display: block; }
-
-  .confirm-btn {
-    width: 100%;
-    padding: 16px;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    letter-spacing: 0.02em;
-    transition: all 0.15s;
-  }
-  .confirm-btn:active { transform: scale(0.98); opacity: 0.9; }
-  .confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* Stats */
-  .section-title {
-    font-size: 11px;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 12px;
-  }
-  .stat-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .stat-row:last-child { border-bottom: none; }
-  .stat-name { font-size: 15px; font-weight: 500; min-width: 110px; }
-  .stat-bar-wrap { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-  .stat-bar { height: 100%; background: var(--accent2); border-radius: 3px; transition: width 0.5s ease; }
-  .stat-count {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--text2);
-    min-width: 30px;
-    text-align: right;
-  }
-
-  /* History */
-  .history-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .history-item:last-child { border-bottom: none; }
-  .history-date {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--accent);
-    min-width: 45px;
-    padding-top: 2px;
-  }
-  .history-names { font-size: 14px; color: var(--text); line-height: 1.5; }
-
-  /* Bottom nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    max-width: 480px;
-    margin: 0 auto;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    z-index: 100;
-  }
-  .tab {
-    flex: 1;
-    padding: 12px 0;
-    text-align: center;
-    cursor: pointer;
-    font-size: 11px;
-    color: var(--text3);
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.05em;
-    transition: color 0.15s;
-    border: none;
-    background: none;
-    text-transform: uppercase;
-  }
-  .tab.active { color: var(--accent); }
-  .tab-icon { font-size: 20px; display: block; margin-bottom: 2px; }
-
-  /* Empty state */
-  .empty { color: var(--text3); font-size: 14px; padding: 20px 0; text-align: center; }
-
-  /* Alert */
-  .alert {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    font-size: 13px;
-    color: var(--text2);
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-  .alert.success { border-left-color: var(--accent2); }
-  .alert.error { border-left-color: var(--danger); color: var(--danger); }
-
-  /* Loading */
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: var(--text3);
-    font-size: 13px;
-    gap: 10px;
-  }
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;padding:0 0 80px 0}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+  .header-title{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--accent);letter-spacing:.05em}
+  .header-right{display:flex;align-items:center;gap:8px}
+  .header-date{font-size:12px;color:var(--text2);font-family:'IBM Plex Mono',monospace}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);transition:background .3s;flex-shrink:0}
+  .sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite}
+  .sync-dot.ok{background:var(--accent2)}
+  .sync-dot.error{background:var(--danger)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .page{display:none;padding:20px;animation:fadeIn .15s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .card-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:10px}
+  .driver-row{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border-radius:4px;padding:6px 11px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--surface2);color:var(--text2)}
+  .chip.working{border-color:var(--accent2);color:var(--accent2)}
+  .chip.off{border-color:var(--danger);color:var(--danger);opacity:.6}
+  .chip.holiday{border-color:var(--warning);color:var(--warning);opacity:.6}
+  .count-row{display:flex;align-items:center;justify-content:center;gap:28px;padding:4px 0}
+  .count-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;user-select:none}
+  .count-btn:active{transform:scale(.9);background:var(--border)}
+  .count-num{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:600;color:var(--accent);min-width:64px;text-align:center;line-height:1}
+  .suggestion-card{background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+  .suggestion-label{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:12px}
+  .suggestion-names{font-size:24px;font-weight:600;line-height:1.45;margin-bottom:16px}
+  .suggestion-names span{display:block}
+  .confirm-btn{width:100%;padding:17px;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.02em;transition:all .12s}
+  .confirm-btn:active{transform:scale(.98);opacity:.85}
+  .confirm-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+  .alert{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warning);border-radius:var(--radius);padding:13px 15px;font-size:14px;color:var(--text2);margin-bottom:14px;line-height:1.5}
+  .section-title{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;margin-bottom:14px}
+  .stat-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .stat-row:last-child{border-bottom:none}
+  .stat-name{font-size:15px;font-weight:500;min-width:115px}
+  .stat-bar-wrap{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+  .stat-bar{height:100%;background:var(--accent2);border-radius:3px;transition:width .6s ease}
+  .stat-count{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text2);min-width:28px;text-align:right}
+  .history-item{display:flex;align-items:flex-start;gap:14px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .history-item:last-child{border-bottom:none}
+  .history-date{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);min-width:48px;padding-top:2px;flex-shrink:0}
+  .history-names{font-size:14px;color:var(--text);line-height:1.55}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100}
+  .tab{flex:1;padding:10px 0 12px;text-align:center;cursor:pointer;font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;transition:color .12s;border:none;background:none;text-transform:uppercase}
+  .tab.active{color:var(--accent)}
+  .tab-icon{font-size:22px;display:block;margin-bottom:3px}
+  .empty{color:var(--text3);font-size:14px;padding:24px 0;text-align:center}
+  .loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;gap:10px}
+  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-title">INTER // ΟΔΗΓΟΙ</div>
-  <div style="display:flex;align-items:center;gap:8px">
+  <div class="header-right">
     <div class="header-date" id="header-date"></div>
     <div class="sync-dot" id="sync-dot"></div>
   </div>
 </div>
-
-<!-- MAIN PAGE -->
-<div class="page active" id="page-main">
-  <div id="main-content">
-    <div class="loading"><div class="spinner"></div> Φόρτωση...</div>
-  </div>
-</div>
-
-<!-- STATS PAGE -->
-<div class="page" id="page-stats">
-  <div class="section-title">Στατιστικά Inter</div>
-  <div id="stats-content"><div class="empty">Φόρτωση...</div></div>
-</div>
-
-<!-- HISTORY PAGE -->
-<div class="page" id="page-history">
-  <div class="section-title">Ιστορικό αποστολών</div>
-  <div id="history-content"><div class="empty">Φόρτωση...</div></div>
-</div>
-
+<div class="page active" id="page-main"><div id="main-content"><div class="loading"><div class="spinner"></div> Φόρτωση...</div></div></div>
+<div class="page" id="page-stats"><div class="section-title">Στατιστικά Inter</div><div id="stats-content"><div class="empty">Φόρτωση...</div></div></div>
+<div class="page" id="page-history"><div class="section-title">Ιστορικό αποστολών</div><div id="history-content"><div class="empty">Φόρτωση...</div></div></div>
 <nav class="bottom-nav">
-  <button class="tab active" onclick="showPage('main')">
-    <span class="tab-icon">🚛</span>Σήμερα
-  </button>
-  <button class="tab" onclick="showPage('stats')">
-    <span class="tab-icon">📊</span>Στατιστικά
-  </button>
-  <button class="tab" onclick="showPage('history')">
-    <span class="tab-icon">📋</span>Ιστορικό
-  </button>
+  <button class="tab active" onclick="showPage('main')"><span class="tab-icon">🚛</span>Σήμερα</button>
+  <button class="tab" onclick="showPage('stats')"><span class="tab-icon">📊</span>Στατιστικά</button>
+  <button class="tab" onclick="showPage('history')"><span class="tab-icon">📋</span>Ιστορικό</button>
 </nav>
-
 <script>
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzzS3DOn5eNZ4TRP008oU2W4RAFLGu4WxyhhxhSGr7OW06frbbAX_ux64v6x8lXt4hpXw/exec';
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbzzS3DOn5eNZ4TRP008oU2W4RAFLGu4WxyhhxhSGr7OW06frbbAX_ux64v6x8lXt4hpXw/exec';
+const DRIVERS=['Καραγιώργος','Σαντικίδης','Σερσέμης','Στύλος','Ζαχαρίας'];
 
-// =================== SCHEDULE DATA ===================
-// Μάιος 2026 - ρεπό ανά οδηγό
-const SCHEDULE = {
-  2026: {
-    5: { // Μάιος
-      'Καραγεώργος': [3,9,10,17,18,23,24,29,31],
-      'Σαντικίδης':  [4,9,10,15,16,22,23,28,30],
-      'Σερσέμης':    [2,8,9,14,15,21,22,27,28],
-      'Στύλος':      [1,7,8,13,14,20,21,26,27],
-      'Ζαχαρίας':    [6,7,12,13,19,20,25,26,31],
+// Πρόγραμμα Μαΐου 2026 — ημέρες που ΔΕΝ εργάζεται ο οδηγός (εκτός Κυριακών/αργιών)
+const SCHEDULE={
+  2026:{
+    5:{
+      'Καραγιώργος':{off:[3,9,10,17,18,23,24,29,31]},
+      'Σαντικίδης': {off:[3,9,10,16,17,22,23,28,31]},
+      'Σερσέμης':   {off:[2,3,10,15,16,21,22,27,31]},
+      'Στύλος':     {off:[3,10,11,17,18,20,24,26,31]},
+      'Ζαχαρίας':  {off:[3,10,14,17,19,24,25,30,31]},
     }
   }
 };
 
-// Αργίες
-const HOLIDAYS = ['2026-05-01'];
+const HOLIDAYS={'2026-05-01':'Πρωτομαγιά'};
 
-// Drivers list
-const DRIVERS = ['Καραγεώργος','Σαντικίδης','Σερσέμης','Στύλος','Ζαχαρίας'];
+const HISTORICAL=[
+  {date:'2026-04-22',drivers:['Σερσέμης','Ζαχαρίας']},
+  {date:'2026-04-23',drivers:['Καραγιώργος','Στύλος']},
+  {date:'2026-04-24',drivers:['Σερσέμης','Στύλος','Ζαχαρίας']},
+  {date:'2026-04-27',drivers:['Καραγιώργος','Σερσέμης','Ζαχαρίας']},
+  {date:'2026-04-28',drivers:['Σαντικίδης','Σερσέμης','Στύλος']},
+  {date:'2026-04-29',drivers:['Σαντικίδης','Σερσέμης','Ζαχαρίας']},
+  {date:'2026-04-30',drivers:['Καραγιώργος','Στύλος']},
+  {date:'2026-05-04',drivers:['Σαντικίδης','Ζαχαρίας']},
+  {date:'2026-05-05',drivers:['Στύλος','Σερσέμης']},
+  {date:'2026-05-06',drivers:['Σαντικίδης','Σερσέμης']},
+  {date:'2026-05-07',drivers:['Στύλος','Ζαχαρίας']},
+  {date:'2026-05-08',drivers:['Σαντικίδης','Σερσέμης','Στύλος']},
+  {date:'2026-05-11',drivers:['Καραγιώργος','Ζαχαρίας']},
+];
 
-// =================== STATE ===================
-let state = {
-  history: [],        // [{date:'2026-05-11', drivers:['Α','Β']}]
-  interCounts: {},    // {driver: count}
-  currentCount: 1,
-  loaded: false
-};
+let state={history:[],interCounts:{},currentCount:1,loaded:false};
 
-// =================== HELPERS ===================
-function toDateStr(d) {
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function toDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function getToday(){const d=new Date();return{d,str:toDateStr(d),day:d.getDate(),month:d.getMonth()+1,year:d.getFullYear(),dow:d.getDay()}}
+function isHoliday(s){return!!HOLIDAYS[s]}
+function isSunday(dow){return dow===0}
+
+function getWorkingDrivers(day,month,year){
+  const sched=((SCHEDULE[year]||{})[month])||{};
+  return DRIVERS.filter(d=>!((sched[d]||{off:[]}).off.includes(day)));
 }
 
-function getToday() {
-  const d = new Date();
-  return { d, str: toDateStr(d), day: d.getDate(), month: d.getMonth()+1, year: d.getFullYear() };
-}
-
-function isHoliday(dateStr) { return HOLIDAYS.includes(dateStr); }
-
-function getWorkingDrivers(day, month, year) {
-  const yearSched = SCHEDULE[year];
-  if (!yearSched) return DRIVERS.slice();
-  const monthSched = yearSched[month];
-  if (!monthSched) return DRIVERS.slice();
-  return DRIVERS.filter(d => !( monthSched[d] || [] ).includes(day));
-}
-
-function getSuggested(count, working) {
-  if (!working.length) return [];
-  // Sort by: fewest inter trips first, then by last sent (oldest first)
-  const sorted = [...working].sort((a,b) => {
-    const ca = state.interCounts[a]||0;
-    const cb = state.interCounts[b]||0;
-    if (ca !== cb) return ca - cb;
-    // Find last date each was sent
-    const lastA = state.history.findIndex(h => h.drivers.includes(a));
-    const lastB = state.history.findIndex(h => h.drivers.includes(b));
-    const idxA = lastA === -1 ? 9999 : lastA;
-    const idxB = lastB === -1 ? 9999 : lastB;
-    return idxB - idxA; // higher index = older
+function getSuggested(count,working){
+  if(!working.length)return[];
+  const sorted=[...working].sort((a,b)=>{
+    const ca=state.interCounts[a]||0,cb=state.interCounts[b]||0;
+    if(ca!==cb)return ca-cb;
+    const ia=state.history.findIndex(h=>h.drivers.includes(a));
+    const ib=state.history.findIndex(h=>h.drivers.includes(b));
+    return(ib===-1?9999:ib)-(ia===-1?9999:ia);
   });
-  return sorted.slice(0, Math.min(count, working.length));
+  return sorted.slice(0,Math.min(count,working.length));
 }
 
-// =================== BACKEND ===================
-function setSyncDot(state) {
-  const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot ' + state;
-}
+function setSyncDot(s){document.getElementById('sync-dot').className='sync-dot '+s}
 
-async function loadData() {
+async function loadData(){
   setSyncDot('syncing');
-  try {
-    const res = await fetch(BACKEND_URL + '?action=read');
-    const data = await res.json();
-    if (data && typeof data === 'object') {
-      state.history = data.history || [];
-      state.interCounts = data.interCounts || {};
+  try{
+    const res=await fetch(BACKEND_URL+'?action=read');
+    const data=await res.json();
+    if(data&&data.history&&data.history.length>0){
+      state.history=data.history;
+      state.interCounts=data.interCounts||{};
+    }else{
+      state.history=[...HISTORICAL];
+      state.interCounts={};
+      HISTORICAL.forEach(h=>h.drivers.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1}));
+      await saveData();
     }
-    state.loaded = true;
-    setSyncDot('ok');
-  } catch(e) {
-    setSyncDot('error');
-    state.loaded = true;
+    state.loaded=true;setSyncDot('ok');
+  }catch(e){
+    state.history=[...HISTORICAL];
+    state.interCounts={};
+    HISTORICAL.forEach(h=>h.drivers.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1}));
+    state.loaded=true;setSyncDot('error');
   }
   render();
 }
 
-async function saveData() {
+async function saveData(){
   setSyncDot('syncing');
-  try {
-    await fetch(BACKEND_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'write', payload: { history: state.history, interCounts: state.interCounts } })
-    });
+  try{
+    await fetch(BACKEND_URL,{method:'POST',body:JSON.stringify({action:'write',payload:{history:state.history,interCounts:state.interCounts}})});
     setSyncDot('ok');
-  } catch(e) {
-    setSyncDot('error');
-  }
+  }catch(e){setSyncDot('error')}
 }
 
-// =================== RENDER ===================
-function render() {
-  renderMain();
-  renderStats();
-  renderHistory();
-}
+function render(){renderMain();renderStats();renderHistory()}
 
-function renderMain() {
-  const { str, day, month, year } = getToday();
-  const holiday = isHoliday(str);
-  const dow = new Date().getDay(); // 0=Sun
-  const isWeekend = dow === 0;
-
-  const working = getWorkingDrivers(day, month, year);
-  const suggested = getSuggested(state.currentCount, working);
-
-  let html = '';
-
-  // Today status
-  if (holiday || isWeekend) {
-    html += `<div class="alert">🗓️ Σήμερα είναι ${holiday ? 'αργία' : 'Κυριακή'} — δεν εργάζεται κανείς.</div>`;
-  }
-
-  // Working drivers
-  html += `<div class="today-card">
-    <div class="today-label">Εργάζονται σήμερα</div>
-    <div class="today-drivers">`;
-  DRIVERS.forEach(d => {
-    const isWorking = working.includes(d);
-    html += `<div class="driver-chip ${isWorking?'working':'off'}">${d}</div>`;
+function renderMain(){
+  const{str,day,month,year,dow}=getToday();
+  const holiday=isHoliday(str),sunday=isSunday(dow),noWork=holiday||sunday;
+  const working=noWork?[]:getWorkingDrivers(day,month,year);
+  const suggested=getSuggested(state.currentCount,working);
+  let html='';
+  if(holiday)html+=`<div class="alert">🗓️ Σήμερα είναι αργία (${HOLIDAYS[str]}) — δεν εργάζεται κανείς.</div>`;
+  else if(sunday)html+=`<div class="alert">🗓️ Κυριακή — δεν εργάζεται κανείς.</div>`;
+  html+=`<div class="card"><div class="card-label">Κατάσταση οδηγών σήμερα</div><div class="driver-row">`;
+  DRIVERS.forEach(d=>{
+    if(noWork)html+=`<div class="chip holiday">${d}</div>`;
+    else if(working.includes(d))html+=`<div class="chip working">${d}</div>`;
+    else html+=`<div class="chip off">${d}</div>`;
   });
-  html += `</div></div>`;
-
-  // Count
-  html += `<div class="count-section">
-    <div class="count-label">Πόσοι χρειάζονται στην Inter;</div>
-    <div class="count-row">
-      <button class="count-btn" onclick="changeCount(-1)">−</button>
-      <div class="count-num" id="count-num">${state.currentCount}</div>
-      <button class="count-btn" onclick="changeCount(1)">+</button>
-    </div>
-  </div>`;
-
-  // Suggestion
-  if (!holiday && !isWeekend && working.length > 0) {
-    html += `<div class="suggestion-card">
-      <div class="suggestion-label">▶ Πηγαίνουν στην Inter</div>
-      <div class="suggestion-names">`;
-    suggested.forEach(n => { html += `<span class="name">${n}</span>`; });
-    html += `</div>
-      <button class="confirm-btn" onclick="confirmSend()">✓ Επιβεβαίωση αποστολής</button>
-    </div>`;
+  html+=`</div></div>`;
+  html+=`<div class="card"><div class="card-label">Πόσοι χρειάζονται στην Inter;</div><div class="count-row"><button class="count-btn" onclick="changeCount(-1)">−</button><div class="count-num" id="count-num">${state.currentCount}</div><button class="count-btn" onclick="changeCount(1)">+</button></div></div>`;
+  if(!noWork&&working.length>0){
+    html+=`<div class="suggestion-card"><div class="suggestion-label">▶ Πηγαίνουν στην Inter</div><div class="suggestion-names">`;
+    suggested.forEach(n=>{html+=`<span>${n}</span>`});
+    html+=`</div><button class="confirm-btn" onclick="confirmSend()">✓ Επιβεβαίωση αποστολής</button></div>`;
   }
-
-  document.getElementById('main-content').innerHTML = html;
+  document.getElementById('main-content').innerHTML=html;
 }
 
-function renderStats() {
-  const maxC = Math.max(...DRIVERS.map(d => state.interCounts[d]||0), 1);
-  let html = '';
-  const sorted = [...DRIVERS].sort((a,b) => (state.interCounts[b]||0)-(state.interCounts[a]||0));
-  sorted.forEach(d => {
-    const cnt = state.interCounts[d]||0;
-    const pct = Math.round((cnt/maxC)*100);
-    html += `<div class="stat-row">
-      <div class="stat-name">${d}</div>
-      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div>
-      <div class="stat-count">${cnt}</div>
-    </div>`;
+function renderStats(){
+  const maxC=Math.max(...DRIVERS.map(d=>state.interCounts[d]||0),1);
+  const sorted=[...DRIVERS].sort((a,b)=>(state.interCounts[b]||0)-(state.interCounts[a]||0));
+  let html='';
+  sorted.forEach(d=>{
+    const cnt=state.interCounts[d]||0,pct=Math.round((cnt/maxC)*100);
+    html+=`<div class="stat-row"><div class="stat-name">${d}</div><div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div><div class="stat-count">${cnt}</div></div>`;
   });
-  document.getElementById('stats-content').innerHTML = html || '<div class="empty">Δεν υπάρχουν δεδομένα</div>';
+  document.getElementById('stats-content').innerHTML=html||'<div class="empty">Δεν υπάρχουν δεδομένα</div>';
 }
 
-function renderHistory() {
-  const recent = state.history.slice(0,30);
-  if (!recent.length) {
-    document.getElementById('history-content').innerHTML = '<div class="empty">Δεν υπάρχει ιστορικό</div>';
-    return;
-  }
-  let html = '';
-  recent.forEach(h => {
-    const parts = h.date.split('-');
-    const label = parts[2]+'/'+parts[1];
-    html += `<div class="history-item">
-      <div class="history-date">${label}</div>
-      <div class="history-names">${h.drivers.join(', ')}</div>
-    </div>`;
+function renderHistory(){
+  const recent=state.history.slice(0,40);
+  if(!recent.length){document.getElementById('history-content').innerHTML='<div class="empty">Δεν υπάρχει ιστορικό</div>';return}
+  let html='';
+  recent.forEach(h=>{
+    const p=h.date.split('-');
+    html+=`<div class="history-item"><div class="history-date">${p[2]}/${p[1]}</div><div class="history-names">${h.drivers.join(', ')}</div></div>`;
   });
-  document.getElementById('history-content').innerHTML = html;
+  document.getElementById('history-content').innerHTML=html;
 }
 
-// =================== ACTIONS ===================
-function changeCount(delta) {
-  const { day, month, year } = getToday();
-  const working = getWorkingDrivers(day, month, year);
-  state.currentCount = Math.max(1, Math.min(state.currentCount + delta, working.length || 4));
-  document.getElementById('count-num').textContent = state.currentCount;
+function changeCount(delta){
+  const{day,month,year,dow,str}=getToday();
+  const working=(isHoliday(str)||isSunday(dow))?[]:getWorkingDrivers(day,month,year);
+  const max=working.length||4;
+  state.currentCount=Math.max(1,Math.min(state.currentCount+delta,max));
+  const el=document.getElementById('count-num');
+  if(el)el.textContent=state.currentCount;
   renderMain();
 }
 
-function confirmSend() {
-  const { str, day, month, year } = getToday();
-  const working = getWorkingDrivers(day, month, year);
-  const suggested = getSuggested(state.currentCount, working);
-  if (!suggested.length) return;
-
-  // Check if already confirmed today
-  if (state.history.length && state.history[0].date === str) {
-    // Update today's entry
-    const prev = state.history[0].drivers;
-    prev.forEach(d => { state.interCounts[d] = Math.max(0,(state.interCounts[d]||0)-1); });
-    state.history[0].drivers = suggested;
-  } else {
-    state.history.unshift({ date: str, drivers: suggested });
+function confirmSend(){
+  const{str,day,month,year}=getToday();
+  const working=getWorkingDrivers(day,month,year);
+  const suggested=getSuggested(state.currentCount,working);
+  if(!suggested.length)return;
+  const idx=state.history.findIndex(h=>h.date===str);
+  if(idx!==-1){
+    state.history[idx].drivers.forEach(d=>{state.interCounts[d]=Math.max(0,(state.interCounts[d]||0)-1)});
+    state.history.splice(idx,1);
   }
-
-  suggested.forEach(d => { state.interCounts[d] = (state.interCounts[d]||0)+1; });
-
-  // Keep only last 60 days
-  state.history = state.history.slice(0,60);
-
+  state.history.unshift({date:str,drivers:suggested});
+  suggested.forEach(d=>{state.interCounts[d]=(state.interCounts[d]||0)+1});
+  state.history=state.history.slice(0,60);
   saveData();
-  render();
-
-  // Flash feedback
-  const btn = document.querySelector('.confirm-btn');
-  if (btn) { btn.textContent = '✓ Αποθηκεύτηκε!'; btn.disabled = true; setTimeout(() => render(), 1500); }
+  const btn=document.querySelector('.confirm-btn');
+  if(btn){btn.textContent='✓ Αποθηκεύτηκε!';btn.disabled=true;setTimeout(()=>render(),1500)}
 }
 
-// =================== NAV ===================
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  const idx = ['main','stats','history'].indexOf(name);
-  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.querySelectorAll('.tab')[['main','stats','history'].indexOf(name)].classList.add('active');
 }
 
-// =================== INIT ===================
-const today = getToday();
-const days = ['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
-document.getElementById('header-date').textContent = days[new Date().getDay()]+' '+today.day+'/'+today.month;
-
+const days=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
+const t=getToday();
+document.getElementById('header-date').textContent=days[t.dow]+' '+t.day+'/'+t.month;
 loadData();
 </script>
 </body>
