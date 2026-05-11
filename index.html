@@ -217,14 +217,43 @@ function getDayOpts(){
   return opts;
 }
 
-function getSorted(available, excludeDs){
-  // excludeDs: array of dateStrings to skip when calculating "same day" penalty
-  return [...available].sort((a,b)=>{
-    const ca=S.counts[a]||0,cb=S.counts[b]||0;
-    if(ca!==cb)return ca-cb;
-    const la=S.lastDate[a]||'1900-01-01',lb=S.lastDate[b]||'1900-01-01';
-    return la.localeCompare(lb);
-  });
+function getPrevWorkingDate(ds){
+  // Βρες την προηγούμενη εργάσιμη ημέρα από το ds
+  const d=parseDate(ds);
+  for(let i=1;i<=7;i++){
+    const prev=new Date(d);prev.setDate(d.getDate()-i);
+    const ps=prev.toISOString().slice(0,10);
+    const pd=parseDate(ps);
+    const day=pd.getDate(),month=pd.getMonth();
+    if(month!==4) return ps; // εκτός Μαΐου, επιστρέφουμε ό,τι βρούμε
+    if(MAY_SUN.includes(day)||MAY_HOL.includes(day)) continue; // παρακάμπτουμε
+    return ps;
+  }
+  return null;
+}
+
+function getSorted(available, forDateStr){
+  // forDateStr: η ημερομηνία για την οποία επιλέγουμε
+  // Κριτήρια: 1) λιγότερες φορές, 2) δεν πήγε την προηγούμενη εργάσιμη, 3) παλαιότερη τελευταία
+  const prevDs = forDateStr ? getPrevWorkingDate(forDateStr) : null;
+  const prevEntry = prevDs ? getEntry(prevDs) : null;
+  const wentYesterday = prevEntry ? prevEntry.drivers : [];
+
+  // Χωρισμός: αυτοί που δεν πήγαν χθες και αυτοί που πήγαν
+  const fresh = available.filter(d=>!wentYesterday.includes(d));
+  const repeated = available.filter(d=>wentYesterday.includes(d));
+
+  function byRotation(list){
+    return [...list].sort((a,b)=>{
+      const ca=S.counts[a]||0,cb=S.counts[b]||0;
+      if(ca!==cb)return ca-cb;
+      const la=S.lastDate[a]||'1900-01-01',lb=S.lastDate[b]||'1900-01-01';
+      return la.localeCompare(lb);
+    });
+  }
+
+  // Πρώτα οι "φρέσκοι" ταξινομημένοι, μετά οι "χθεσινοί" ταξινομημένοι
+  return [...byRotation(fresh), ...byRotation(repeated)];
 }
 
 function getEntry(ds){return S.history.find(h=>h.date===ds)||null}
@@ -379,7 +408,7 @@ function renderActionCard(){
       <span class="cnt-label">οδηγοί</span>
       <button class="cnt-btn" onclick="changeCount(1)">+</button>
     </div>`;
-    const suggested=getSorted(working).slice(0,Math.min(S.currentCount,working.length));
+    const suggested=getSorted(working,ds).slice(0,Math.min(S.currentCount,working.length));
     html+=`<div class="suggested-names">`;
     suggested.forEach(d=>{
       const cnt=S.counts[d]||0;
@@ -395,7 +424,7 @@ function renderActionCard(){
 
 function renderStats(){
   const maxC=Math.max(...DRIVERS.map(d=>S.counts[d]||0),1);
-  const sorted=getSorted(DRIVERS);
+  const sorted=getSorted(DRIVERS,null);
   const html=sorted.map((d,i)=>{
     const cnt=S.counts[d]||0;
     const last=S.lastDate[d];
@@ -442,7 +471,7 @@ function doSend(ds){
   const opt=dayOpts.find(o=>o.dateStr===ds);
   if(!opt)return;
   const working=opt.status.working;
-  const suggested=getSorted(working).slice(0,Math.min(S.currentCount,working.length));
+  const suggested=getSorted(working,ds).slice(0,Math.min(S.currentCount,working.length));
   S.history=S.history.filter(h=>h.date!==ds);
   S.history.unshift({date:ds,drivers:suggested});
   S.history=S.history.slice(0,60);
@@ -458,7 +487,7 @@ function addOneMore(ds){
   const working=opt.status.working;
   const available=working.filter(w=>!entry.drivers.includes(w));
   if(!available.length)return;
-  const next=getSorted(available)[0];
+  const next=getSorted(available,ds)[0];
   entry.drivers.push(next);
   rebuildCounts();
   saveData();
