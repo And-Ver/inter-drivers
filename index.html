@@ -179,8 +179,9 @@ const HISTORICAL=[
 // ============================================================
 // STATE
 // ============================================================
-let S={history:[],counts:{},lastDate:{},selOffset:1,currentCount:0,editIdx:-1,editVal:''};
+let S={history:[],counts:{},monthCounts:{},lastDate:{},selOffset:1,currentCount:0,editIdx:-1,editVal:''};
 let dayOpts=[];
+const CURRENT_MONTH=new Date().toISOString().slice(0,7); // π.χ. "2026-05"
 
 // ============================================================
 // HELPERS
@@ -259,10 +260,13 @@ function getSorted(available, forDateStr){
 function getEntry(ds){return S.history.find(h=>h.date===ds)||null}
 
 function rebuildCounts(){
-  S.counts={};S.lastDate={};
+  S.counts={};S.monthCounts={};S.lastDate={};
   [...S.history].reverse().forEach(h=>{
     h.drivers.forEach(d=>{
       S.counts[d]=(S.counts[d]||0)+1;
+      if(h.date.slice(0,7)===CURRENT_MONTH){
+        S.monthCounts[d]=(S.monthCounts[d]||0)+1;
+      }
       if(!S.lastDate[d]||h.date>S.lastDate[d])S.lastDate[d]=h.date;
     });
   });
@@ -336,7 +340,7 @@ function renderDriverChips(){
   const st=opt.status;
   let html='';
   DRIVERS.forEach(d=>{
-    const cnt=S.counts[d]||0;
+    const cnt=S.monthCounts[d]||0;
     if(st.sunday.length)html+=`<span class="chip chip-sun">${d} ${cnt}</span>`;
     else if(st.holiday.length)html+=`<span class="chip chip-holiday">${d} ${cnt}</span>`;
     else if(st.adeia.includes(d))html+=`<span class="chip chip-adeia">${d} ${cnt}</span>`;
@@ -372,7 +376,7 @@ function renderActionCard(){
     // Υπάρχει ήδη καταχωρημένη εγγραφή
     html+=`<div class="suggested-names">`;
     entry.drivers.forEach((d,i)=>{
-      const cnt=S.counts[d]||0;
+      const cnt=S.monthCounts[d]||0;
       const last=S.lastDate[d];
       const dayAgo=last?daysSince(last):null;
       const metaTxt=dayAgo!==null?`${cnt}x · τελ. ${dayAgo}μ πριν`:`${cnt}x`;
@@ -380,7 +384,7 @@ function renderActionCard(){
         const available=working.filter(w=>w===d||!entry.drivers.includes(w));
         html+=`<div class="sent-row">
           <select class="inline-sel" id="edit-sel" onchange="S.editVal=this.value">
-            ${available.map(w=>`<option value="${w}"${w===d?' selected':''}>${w} (${S.counts[w]||0}x)</option>`).join('')}
+            ${available.map(w=>`<option value="${w}"${w===d?' selected':''}>${w} (${S.monthCounts[w]||0}x)</option>`).join('')}
           </select>
           <button class="ok-btn" onclick="confirmEdit(${i})">OK</button>
         </div>`;
@@ -412,7 +416,7 @@ function renderActionCard(){
       const suggested=getSorted(working,ds).slice(0,Math.min(S.currentCount,working.length));
       html+=`<div class="suggested-names">`;
       suggested.forEach(dr=>{
-        const cnt=S.counts[dr]||0;
+        const cnt=S.monthCounts[dr]||0;
         html+=`<div class="sent-row"><span class="sent-name">${dr}</span><span class="sent-meta">${cnt}x</span></div>`;
       });
       html+=`</div>`;
@@ -427,10 +431,10 @@ function renderActionCard(){
 }
 
 function renderStats(){
-  const maxC=Math.max(...DRIVERS.map(d=>S.counts[d]||0),1);
+  const maxC=Math.max(...DRIVERS.map(d=>S.monthCounts[d]||0),1);
   const sorted=getSorted(DRIVERS,null);
   const html=sorted.map((d,i)=>{
-    const cnt=S.counts[d]||0;
+    const cnt=S.monthCounts[d]||0;
     const last=S.lastDate[d];
     const lastTxt=last?`τελ. ${daysSince(last)} μέρες πριν`:'δεν έχει πάει';
     const pct=Math.round((cnt/maxC)*100);
