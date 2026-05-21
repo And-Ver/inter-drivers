@@ -145,7 +145,7 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 // ============================================================
 // CONFIG
 // ============================================================
-const BACKEND='https://script.google.com/macros/s/AKfycbzzS3DOn5eNZ4TRP008oU2W4RAFLGu4WxyhhxhSGr7OW06frbbAX_ux64v6x8lXt4hpXw/exec';
+const BACKEND='https://script.google.com/macros/s/AKfycbzio_Ywf9wfnnZU7a2kbTWAKemo4nTubBlIFBmmwx7BY8E7dfCIJzuc5SApiiLGYZ6k/exec';
 const DRIVERS=['Καραγιώργος','Σαντικίδης','Σερσέμης','Στύλος','Ζαχαρίας'];
 const WD=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
 
@@ -174,6 +174,15 @@ const HISTORICAL=[
   {date:'2026-05-07',drivers:['Στύλος','Ζαχαρίας']},
   {date:'2026-05-08',drivers:['Σαντικίδης','Σερσέμης','Στύλος']},
   {date:'2026-05-11',drivers:['Καραγιώργος','Ζαχαρίας']},
+  {date:'2026-05-12',drivers:['Σαντικίδης','Σερσέμης']},
+  {date:'2026-05-13',drivers:['Καραγιώργος','Ζαχαρίας','Σαντικίδης']},
+  {date:'2026-05-14',drivers:['Σερσέμης','Στύλος']},
+  {date:'2026-05-15',drivers:['Καραγιώργος','Σαντικίδης']},
+  {date:'2026-05-16',drivers:['Σερσέμης','Ζαχαρίας','Στύλος']},
+  {date:'2026-05-18',drivers:['Σαντικίδης','Στύλος']},
+  {date:'2026-05-19',drivers:['Καραγιώργος','Σερσέμης','Σαντικίδης']},
+  {date:'2026-05-20',drivers:['Ζαχαρίας']},
+  {date:'2026-05-21',drivers:['Καραγιώργος','Στύλος']},
 ];
 
 // ============================================================
@@ -283,17 +292,19 @@ async function loadData(){
     const res=await fetch(BACKEND+'?action=read');
     const data=await res.json();
     if(data&&data.history&&data.history.length>0){
+      // Υπάρχουν δεδομένα στο Sheet — χρησιμοποίησέ τα
       S.history=data.history;
-      S.counts=data.counts||{};
-      S.lastDate=data.lastDate||{};
       rebuildCounts();
+      setSyncDot('ok');
     }else{
+      // Κενό Sheet — φόρτωσε HISTORICAL ΜΟΝΟ στη μνήμη, ΜΗΝ αποθηκεύσεις
+      // (ο χρήστης πρέπει να κάνει την πρώτη αποστολή για να αρχίσει η αποθήκευση)
       S.history=[...HISTORICAL];
       rebuildCounts();
-      await saveData();
+      setSyncDot('ok');
     }
-    setSyncDot('ok');
   }catch(e){
+    // Αποτυχία σύνδεσης — χρησιμοποίησε HISTORICAL χωρίς να γράψεις τίποτα
     S.history=[...HISTORICAL];
     rebuildCounts();
     setSyncDot('error');
@@ -304,9 +315,15 @@ async function loadData(){
 async function saveData(){
   setSyncDot('syncing');
   try{
-    await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'write',payload:{history:S.history,counts:S.counts,lastDate:S.lastDate}})});
+    await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'write',payload:{history:S.history}})});
     setSyncDot('ok');
   }catch(e){setSyncDot('error')}
+}
+
+async function archiveEntry(entry){
+  try{
+    await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'archive',entry:entry})});
+  }catch(e){/* silent */}
 }
 
 // ============================================================
@@ -481,10 +498,12 @@ function doSend(ds){
   const working=opt.status.working;
   const suggested=S.currentCount===0?[]:getSorted(working,ds).slice(0,Math.min(S.currentCount,working.length));
   S.history=S.history.filter(h=>h.date!==ds);
-  S.history.unshift({date:ds,drivers:suggested});
-  S.history=S.history.slice(0,60);
+  const entry={date:ds,drivers:suggested};
+  S.history.unshift(entry);
+  S.history=S.history.slice(0,90);
   rebuildCounts();
   saveData();
+  archiveEntry(entry);
   render();
 }
 
