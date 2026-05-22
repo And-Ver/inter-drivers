@@ -419,13 +419,22 @@ function renderSchedEditor(){
       if(isSun){
         html+=`<button class="${cls}" disabled>${day}</button>`;
       } else {
-        html+=`<button class="${cls}" onclick="toggleSchedDay('${dr}',${day})">${day}</button>`;
+        html+=`<button class="${cls}" data-dr="${dr}" data-day="${day}">${day}</button>`;
       }
     }
     html+=`</div></div>`;
   });
 
   document.getElementById('sched-editor').innerHTML=html;
+
+  // Event delegation για mobile touch
+  document.getElementById('sched-editor').addEventListener('click', function(e){
+    const btn=e.target.closest('.sched-day:not([disabled])');
+    if(!btn) return;
+    const dr=btn.dataset.dr;
+    const day=parseInt(btn.dataset.day);
+    if(dr&&day) toggleSchedDay(dr,day);
+  });
 }
 
 function toggleSchedDay(dr, day){
