@@ -428,17 +428,20 @@ function renderSchedEditor(){
   const editor=document.getElementById('sched-editor');
   editor.innerHTML=html;
 
-  // Νέο wrapper χωρίς παλιά listeners
   const newEditor=editor.cloneNode(true);
   editor.parentNode.replaceChild(newEditor,editor);
-  newEditor.addEventListener('click', function(e){
+
+  function handleTap(e){
     const btn=e.target.closest('button.sched-day:not([disabled])');
     if(!btn) return;
     e.preventDefault();
     const dr=btn.dataset.dr;
     const day=parseInt(btn.dataset.day);
     if(dr&&day) toggleSchedDay(dr,day);
-  });
+  }
+
+  newEditor.addEventListener('touchend', handleTap, {passive:false});
+  newEditor.addEventListener('click', handleTap);
 }
 
 function toggleSchedDay(dr, day){
