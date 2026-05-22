@@ -161,7 +161,7 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 
 <div id="page-schedule" class="page">
   <div class="card">
-    <div class="label"><i class="ti ti-settings"></i> Επεξεργασία προγράμματος μήνα <span style="margin-left:auto;font-size:10px;color:var(--green-light)">build 13</span></div>
+    <div class="label"><i class="ti ti-settings"></i> Επεξεργασία προγράμματος μήνα <span style="margin-left:auto;font-size:10px;color:var(--green-light)">build 14</span></div>
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px;padding:8px;background:#f0f0f0;border-radius:6px" id="tap-test" onclick="this.textContent='✓ Tap λειτουργεί! '+new Date().toLocaleTimeString()">👆 Δοκιμή: πάτα εδώ πρώτα</div>
     <div class="sched-legend">
       <div class="sched-leg-item"><div class="sched-leg-dot" style="background:var(--green-bg);border-color:#97C459"></div>Εργασία</div>
@@ -423,7 +423,10 @@ function renderSchedEditor(){
       if(isSun){
         html+=`<div class="${cls}">${day}</div>`;
       } else {
-        html+=`<div class="${cls}" onclick="tapDay('${dr}',${day})">${day}</div>`;
+      if(isSun){
+        html+=`<div class="${cls}">${day}</div>`;
+      } else {
+        html+=`<div class="${cls}" data-tap="${dr}|${day}">${day}</div>`;
       }
     }
     html+=`</div></div>`;
@@ -433,7 +436,20 @@ function renderSchedEditor(){
   editor.innerHTML=html;
 }
 
-// Global function για iOS compatibility
+// Event delegation στο σταθερό parent (μπαίνει μία φορά)
+let schedListenerAdded=false;
+function initSchedListener(){
+  if(schedListenerAdded) return;
+  const editor=document.getElementById('sched-editor');
+  editor.addEventListener('click', function(e){
+    const cell=e.target.closest('[data-tap]');
+    if(!cell) return;
+    const [dr,day]=cell.dataset.tap.split('|');
+    tapDay(dr,parseInt(day));
+  });
+  schedListenerAdded=true;
+}
+
 window.tapDay=function(dr,day){
   toggleSchedDay(dr,day);
 };
@@ -744,7 +760,7 @@ function showPage(name){
   document.querySelectorAll('.tab')[idx].classList.add('active');
   if(name==='stats')renderStats();
   if(name==='history')renderHistory();
-  if(name==='schedule')renderSchedEditor();
+  if(name==='schedule'){initSchedListener();renderSchedEditor();}
 }
 
 // ============================================================
