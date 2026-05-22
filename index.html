@@ -105,7 +105,7 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 .sched-driver{margin-bottom:14px}
 .sched-driver-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
 .sched-days{display:flex;flex-wrap:wrap;gap:4px}
-.sched-day{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--text2);padding:0;-webkit-appearance:none;touch-action:manipulation}
+.sched-day{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--text2);padding:0;-webkit-appearance:none;touch-action:manipulation;user-select:none;-webkit-user-select:none;}
 .sched-day.sun{background:#F1EFE8;border-color:#B4B2A9;color:#bbb;cursor:default}
 .sched-day.repo{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .sched-day.adeia{background:#E3F4FC;border-color:#00B0F0;color:#0077AA}
@@ -419,7 +419,7 @@ function renderSchedEditor(){
       if(isSun){
         html+=`<button class="${cls}" disabled>${day}</button>`;
       } else {
-        html+=`<button class="${cls}" data-dr="${dr}" data-day="${day}">${day}</button>`;
+        html+=`<button class="${cls}" onclick="window.tapDay('${dr}',${day})">${day}</button>`;
       }
     }
     html+=`</div></div>`;
@@ -427,22 +427,12 @@ function renderSchedEditor(){
 
   const editor=document.getElementById('sched-editor');
   editor.innerHTML=html;
-
-  const newEditor=editor.cloneNode(true);
-  editor.parentNode.replaceChild(newEditor,editor);
-
-  function handleTap(e){
-    const btn=e.target.closest('button.sched-day:not([disabled])');
-    if(!btn) return;
-    e.preventDefault();
-    const dr=btn.dataset.dr;
-    const day=parseInt(btn.dataset.day);
-    if(dr&&day) toggleSchedDay(dr,day);
-  }
-
-  newEditor.addEventListener('touchend', handleTap, {passive:false});
-  newEditor.addEventListener('click', handleTap);
 }
+
+// Global function για iOS compatibility
+window.tapDay=function(dr,day){
+  toggleSchedDay(dr,day);
+};
 
 function toggleSchedDay(dr, day){
   const s=schedEdits[dr];
