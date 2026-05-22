@@ -161,7 +161,7 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 
 <div id="page-schedule" class="page">
   <div class="card">
-    <div class="label"><i class="ti ti-settings"></i> Επεξεργασία προγράμματος μήνα <span style="margin-left:auto;font-size:10px;color:var(--green-light)">build 12</span></div>
+    <div class="label"><i class="ti ti-settings"></i> Επεξεργασία προγράμματος μήνα <span style="margin-left:auto;font-size:10px;color:var(--green-light)">build 13</span></div>
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px;padding:8px;background:#f0f0f0;border-radius:6px" id="tap-test" onclick="this.textContent='✓ Tap λειτουργεί! '+new Date().toLocaleTimeString()">👆 Δοκιμή: πάτα εδώ πρώτα</div>
     <div class="sched-legend">
       <div class="sched-leg-item"><div class="sched-leg-dot" style="background:var(--green-bg);border-color:#97C459"></div>Εργασία</div>
@@ -421,9 +421,9 @@ function renderSchedEditor(){
       else if(isRepo) cls+=' repo';
       else cls+=' working';
       if(isSun){
-        html+=`<span class="${cls}">${day}</span>`;
+        html+=`<div class="${cls}">${day}</div>`;
       } else {
-        html+=`<a href="javascript:void(0)" class="${cls}" onclick="tapDay('${dr}',${day});return false;">${day}</a>`;
+        html+=`<div class="${cls}" onclick="tapDay('${dr}',${day})">${day}</div>`;
       }
     }
     html+=`</div></div>`;
