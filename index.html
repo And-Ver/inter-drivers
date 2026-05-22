@@ -105,7 +105,7 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 .sched-driver{margin-bottom:14px}
 .sched-driver-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
 .sched-days{display:flex;flex-wrap:wrap;gap:4px}
-.sched-day{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--text2)}
+.sched-day{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--text2);padding:0;-webkit-appearance:none;touch-action:manipulation}
 .sched-day.sun{background:#F1EFE8;border-color:#B4B2A9;color:#bbb;cursor:default}
 .sched-day.repo{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .sched-day.adeia{background:#E3F4FC;border-color:#00B0F0;color:#0077AA}
@@ -416,8 +416,11 @@ function renderSchedEditor(){
       else if(isAdeia) cls+=' adeia';
       else if(isRepo) cls+=' repo';
       else cls+=' working';
-      const onclick=isSun?'':`onclick="toggleSchedDay('${dr}',${day})"`;
-      html+=`<div class="${cls}" ${onclick}>${day}</div>`;
+      if(isSun){
+        html+=`<button class="${cls}" disabled>${day}</button>`;
+      } else {
+        html+=`<button class="${cls}" onclick="toggleSchedDay('${dr}',${day})">${day}</button>`;
+      }
     }
     html+=`</div></div>`;
   });
@@ -444,6 +447,33 @@ function toggleSchedDay(dr, day){
 async function saveSchedule(){
   const now=new Date();
   const year=now.getFullYear(), month=now.getMonth()+1;
+  const daysInMonth=new Date(year,month,0).getDate();
+
+  // Validation: έλεγξε κάθε εργάσιμη μέρα
+  const errors=[];
+  for(let day=1;day<=daysInMonth;day++){
+    const d=new Date(year,month-1,day);
+    if(d.getDay()===0) continue; // Κυριακή — skip
+    const reposToday=DRIVERS.filter(dr=>schedEdits[dr].repos.includes(day));
+    const adeiaToday=DRIVERS.filter(dr=>schedEdits[dr].adeia.includes(day));
+    const offToday=reposToday.length+adeiaToday.length;
+    const workingToday=DRIVERS.length-offToday;
+    if(reposToday.length>1){
+      errors.push(`${day}/${month}: Περισσότεροι από 1 σε ρεπό (${reposToday.join(', ')})`);
+    }
+    if(workingToday<4&&adeiaToday.length===0){
+      errors.push(`${day}/${month}: Εργάζονται μόνο ${workingToday} οδηγοί`);
+    }
+    if(workingToday<3){
+      errors.push(`${day}/${month}: Πολύ λίγοι οδηγοί (${workingToday})`);
+    }
+  }
+
+  if(errors.length>0){
+    const msg='⚠️ Βρέθηκαν προβλήματα:\n\n'+errors.slice(0,5).join('\n')+(errors.length>5?`\n...και ${errors.length-5} ακόμα`:'');
+    if(!confirm(msg+'\n\nΘέλεις να αποθηκεύσεις παρ\' όλα αυτά;')) return;
+  }
+
   if(!customSched[year]) customSched[year]={};
   if(!customSched[year][month]) customSched[year][month]={};
   DRIVERS.forEach(dr=>{
@@ -455,7 +485,7 @@ async function saveSchedule(){
   await saveData();
   render();
   const btn=document.querySelector('.sched-save-btn');
-  if(btn){btn.textContent='✓ Αποθηκεύτηκε!';setTimeout(()=>{btn.innerHTML='<i class="ti ti-device-floppy"></i> Αποθήκευση αλλαγών';},1500);}
+  if(btn){btn.innerHTML='✓ Αποθηκεύτηκε!';setTimeout(()=>{btn.innerHTML='<i class="ti ti-device-floppy"></i> Αποθήκευση αλλαγών';},1500);}
 }
 
 // ============================================================
