@@ -193,6 +193,24 @@ const MAY_SCHED={
 const MAY_HOL=[1];
 const MAY_SUN=[3,10,17,24,31];
 
+// Ιούνιος 2026
+const JUN_SCHED={
+  'Καραγιώργος':{repos:[8,13,19,25],    adeia:[]},
+  'Σαντικίδης': {repos:[6,12,18,24,30], adeia:[]},
+  'Σερσέμης':   {repos:[5,11,17,23,29], adeia:[]},
+  'Στύλος':     {repos:[4,10,16,22,27], adeia:[]},
+  'Ζαχαρίας':  {repos:[9,15,20,26],    adeia:[1,2,3]}
+};
+const JUN_HOL=[];
+const JUN_SUN=[7,14,21,28];
+
+// Κεντρικός πίνακας προγραμμάτων ανά μήνα (year-month)
+const SCHEDULES={
+  '2026-5':{sched:MAY_SCHED,hol:MAY_HOL,sun:MAY_SUN},
+  '2026-6':{sched:JUN_SCHED,hol:JUN_HOL,sun:JUN_SUN},
+};
+function getMonthSched(year,month){return SCHEDULES[year+'-'+month]||null;}
+
 const HISTORICAL=[
   {date:'2026-04-22',drivers:['Σερσέμης','Ζαχαρίας']},
   {date:'2026-04-23',drivers:['Καραγιώργος','Στύλος']},
@@ -244,8 +262,9 @@ function getStatus(ds){
   const working=[],repos=[],adeia=[],holiday=[],sunday=[];
 
   // Βρες το σωστό schedule (custom override ή built-in)
-  const builtinSched = month===5&&year===2026 ? MAY_SCHED : null;
-  const builtinHol   = month===5&&year===2026 ? MAY_HOL : [];
+  const monthData = getMonthSched(year,month);
+  const builtinSched = monthData ? monthData.sched : null;
+  const builtinHol   = monthData ? monthData.hol : [];
   const isHol = builtinHol.includes(day);
 
   DRIVERS.forEach(dr=>{
@@ -287,9 +306,10 @@ function getPrevWorkingDate(ds){
     const prev=new Date(d);prev.setDate(d.getDate()-i);
     const ps=prev.toISOString().slice(0,10);
     const pd=parseDate(ps);
-    const day=pd.getDate(),month=pd.getMonth();
-    if(month!==4) return ps; // εκτός Μαΐου, επιστρέφουμε ό,τι βρούμε
-    if(MAY_SUN.includes(day)||MAY_HOL.includes(day)) continue; // παρακάμπτουμε
+    const day=pd.getDate(),month=pd.getMonth()+1,year=pd.getFullYear();
+    const md=getMonthSched(year,month);
+    if(!md) return ps; // δεν έχουμε δεδομένα — επιστρέφουμε ό,τι βρούμε
+    if(pd.getDay()===0||md.hol.includes(day)) continue; // Κυριακή/αργία — παρακάμπτουμε
     return ps;
   }
   return null;
@@ -386,17 +406,16 @@ let schedEdits={}; // working copy during edit
 function initSchedEdits(){
   const now=new Date();
   const year=now.getFullYear(), month=now.getMonth()+1;
+  const md=getMonthSched(year,month);
   schedEdits={};
   DRIVERS.forEach(dr=>{
     const custom=((customSched[year]||{})[month]||{})[dr];
     if(custom){
       schedEdits[dr]={repos:[...custom.repos],adeia:[...(custom.adeia||[])]};
+    } else if(md&&md.sched[dr]){
+      schedEdits[dr]={repos:[...md.sched[dr].repos],adeia:[...md.sched[dr].adeia]};
     } else {
-      if(month===5&&year===2026&&MAY_SCHED[dr]){
-        schedEdits[dr]={repos:[...MAY_SCHED[dr].repos],adeia:[...MAY_SCHED[dr].adeia]};
-      } else {
-        schedEdits[dr]={repos:[],adeia:[]};
-      }
+      schedEdits[dr]={repos:[],adeia:[]};
     }
   });
 }
