@@ -105,11 +105,15 @@ select.inline-sel{font-size:14px;padding:4px 8px;border:1px solid var(--border);
 .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green-mid);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Schedule editor */
-.sched-driver{margin-bottom:14px}
-.sched-driver-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
-.sched-days{display:flex;flex-wrap:wrap;gap:4px}
-.sched-day{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);padding:0;text-decoration:none;user-select:none;-webkit-user-select:none;box-sizing:border-box;}
-.sched-day.sun{background:#F1EFE8;border-color:#B4B2A9;color:#bbb;cursor:default}
+.sched-driver{margin-bottom:18px}
+.sched-driver-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px}
+.sched-month-title{text-align:center;font-size:17px;font-weight:600;color:var(--text);margin-bottom:4px}
+.sched-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.sched-wd{text-align:center;font-size:10px;color:var(--text3);font-weight:600}
+.sched-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.sched-day{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);padding:0;text-decoration:none;user-select:none;-webkit-user-select:none;box-sizing:border-box;}
+.sched-day.empty{border:none;background:transparent;cursor:default}
+.sched-day.sun{background:#F1EFE8;border-color:#B4B2A9;color:#999;cursor:default}
 .sched-day.repo{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .sched-day.adeia{background:#E3F4FC;border-color:#00B0F0;color:#0077AA}
 .sched-day.working{background:var(--green-bg);border-color:#97C459;color:var(--green-mid)}
@@ -425,14 +429,27 @@ function renderSchedEditor(){
   const year=now.getFullYear(), month=now.getMonth()+1;
   const daysInMonth=new Date(year,month,0).getDate();
 
-  // Αν δεν έχει αρχικοποιηθεί, κάντο
   if(Object.keys(schedEdits).length===0) initSchedEdits();
 
-  let html='';
+  const monthNames=['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
+  const weekdayShort=['Δε','Τρ','Τε','Πε','Πα','Σα','Κυ'];
+
+  // Πρώτη μέρα του μήνα — μετατροπή σε Δευτέρα=0
+  let firstDow=new Date(year,month-1,1).getDay(); // 0=Κυρ
+  firstDow=(firstDow+6)%7; // τώρα 0=Δευ
+
+  let html=`<div class="sched-month-title">${monthNames[month-1]} ${year}</div>`;
+
   DRIVERS.forEach(dr=>{
     html+=`<div class="sched-driver">
       <div class="sched-driver-name">${dr}</div>
-      <div class="sched-days">`;
+      <div class="sched-weekdays">`;
+    weekdayShort.forEach(wd=>{ html+=`<div class="sched-wd">${wd}</div>`; });
+    html+=`</div><div class="sched-days">`;
+
+    // Κενά κελιά πριν την 1η
+    for(let i=0;i<firstDow;i++) html+=`<div class="sched-day empty"></div>`;
+
     for(let day=1;day<=daysInMonth;day++){
       const d=new Date(year,month-1,day);
       const isSun=d.getDay()===0;
