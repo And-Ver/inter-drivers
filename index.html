@@ -245,7 +245,7 @@ const HISTORICAL=[
 // ============================================================
 let S={history:[],counts:{},monthCounts:{},lastDate:{},selOffset:1,currentCount:0,editIdx:-1,editVal:''};
 let dayOpts=[];
-const CURRENT_MONTH=new Date().toISOString().slice(0,7);
+const CURRENT_MONTH=(()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');})();
 
 // Custom schedule overrides (αποθηκεύονται στο Sheet)
 // Format: {year:{month:{driver:{repos:[],adeia:[]}}}}
@@ -694,13 +694,13 @@ function renderStats(){
 
 function renderHistory(){
   const now=new Date();
-  const thisMonth=now.toISOString().slice(0,7);
-  const prevMonth=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);
+  const thisMonth=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const prevMonth=prevDate.getFullYear()+'-'+String(prevDate.getMonth()+1).padStart(2,'0');
   const filtered=S.history.filter(h=>h.date.slice(0,7)===thisMonth||h.date.slice(0,7)===prevMonth);
-  const diag='[DIAG: σύνολο='+S.history.length+', μήνες='+thisMonth+'/'+prevMonth+', φιλτρ='+filtered.length+']';
-  if(!filtered.length){document.getElementById('history-list').innerHTML='<div class="empty">Δεν υπάρχει ιστορικό<br>'+diag+'</div>';return}
+  if(!filtered.length){document.getElementById('history-list').innerHTML='<div class="empty">Δεν υπάρχει ιστορικό</div>';return}
   filtered.sort((a,b)=>b.date>a.date?1:b.date<a.date?-1:0);
-  document.getElementById('history-list').innerHTML='<div style="font-size:10px;color:#999;padding:4px">'+diag+'</div>'+filtered.map(h=>`
+  document.getElementById('history-list').innerHTML=filtered.map(h=>`
     <div class="hist-row">
       <span class="hist-date">${fmtDate(h.date)}</span>
       <span class="hist-names">${h.drivers.join(', ')}</span>
