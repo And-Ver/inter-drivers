@@ -197,21 +197,33 @@ const MAY_SCHED={
 const MAY_HOL=[1];
 const MAY_SUN=[3,10,17,24,31];
 
-// Ιούνιος 2026
+// Ιούνιος 2026 — τροποποιημένο (Σαντικίδης άδεια 19-28/6)
 const JUN_SCHED={
-  'Καραγιώργος':{repos:[8,13,19,25],    adeia:[]},
-  'Σαντικίδης': {repos:[6,12,18,24,30], adeia:[]},
-  'Σερσέμης':   {repos:[5,11,17,23,29], adeia:[]},
-  'Στύλος':     {repos:[4,10,16,22,27], adeia:[]},
-  'Ζαχαρίας':  {repos:[9,15,20,26],    adeia:[1,2,3]}
+  'Καραγιώργος':{repos:[8,13,29],         adeia:[]},
+  'Σαντικίδης': {repos:[6,12,18],         adeia:[19,20,22,23,24,25,26,27]},
+  'Σερσέμης':   {repos:[5,11,17],          adeia:[]},
+  'Στύλος':     {repos:[4,10,16],          adeia:[]},
+  'Ζαχαρίας':  {repos:[9,15,30],          adeia:[1,2,3]}
 };
 const JUN_HOL=[];
 const JUN_SUN=[7,14,21,28];
+
+// Ιούλιος 2026
+const JUL_SCHED={
+  'Καραγιώργος':{repos:[4,10,16,22,28],   adeia:[]},
+  'Σαντικίδης': {repos:[3,9,15,21,27],    adeia:[]},
+  'Σερσέμης':   {repos:[2,8,14,20,25,31], adeia:[]},
+  'Στύλος':     {repos:[1,7,13,18,24,30], adeia:[]},
+  'Ζαχαρίας':  {repos:[6,11,17,23,29],   adeia:[]}
+};
+const JUL_HOL=[];
+const JUL_SUN=[5,12,19,26];
 
 // Κεντρικός πίνακας προγραμμάτων ανά μήνα (year-month)
 const SCHEDULES={
   '2026-5':{sched:MAY_SCHED,hol:MAY_HOL,sun:MAY_SUN},
   '2026-6':{sched:JUN_SCHED,hol:JUN_HOL,sun:JUN_SUN},
+  '2026-7':{sched:JUL_SCHED,hol:JUL_HOL,sun:JUL_SUN},
 };
 function getMonthSched(year,month){return SCHEDULES[year+'-'+month]||null;}
 
